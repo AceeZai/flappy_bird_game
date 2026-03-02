@@ -10,6 +10,7 @@ try:
 except:
     pass
 
+# Constants
 fps = 30
 screen_width = 288
 screen_height = 512
@@ -38,7 +39,7 @@ def main():
     images['gameover'] = pygame.image.load('sprites/gameover.png').convert_alpha()
     images['message'] = pygame.image.load('sprites/message.png').convert_alpha()
     images['base'] = pygame.image.load('sprites/base.png').convert_alpha()
-    
+
     try:
         for name in ['die', 'hit', 'point', 'wing']:
             sounds[name] = pygame.mixer.Sound(f'audio/{name}.ogg')
@@ -54,7 +55,7 @@ def main():
         images['pipe'] = (
             pygame.transform.flip(pygame.image.load(pipe_path).convert_alpha(), False, True),
             pygame.image.load(pipe_path).convert_alpha(),
-    )
+        )
 
         hitmasks['pipe'] = (get_hitmask(images['pipe'][0]), get_hitmask(images['pipe'][1]))
         hitmasks['player'] = tuple(get_hitmask(img) for img in images['player'])
@@ -80,8 +81,8 @@ def show_welcome_animation():
             if event.type == KEYDOWN or event.type == MOUSEBUTTONDOWN:
                 sounds['wing'].play()
                 return {'playery': player_y + player_shm_vals['val'], 'basex': base_x, 'playerIndexGen': player_index_gen}
-                
-                player_shm(player_shm_vals)
+
+        player_shm(player_shm_vals)
         screen.blit(images['background'], (0, 0))
         screen.blit(images['player'][next(player_index_gen)], (player_x, player_y + player_shm_vals['val']))
         screen.blit(images['message'], (message_x, message_y))
@@ -94,7 +95,7 @@ def main_game(movement_info):
     player_index_gen = movement_info['playerIndexGen']
     player_x, player_y = int(screen_width * 0.2), movement_info['playery']
     base_x = movement_info['basex']
-    
+
     new_p1 = get_random_pipe()
     new_p2 = get_random_pipe()
     upper_pipes = [{'x': screen_width + 200, 'y': new_p1[0]['y']},
@@ -151,9 +152,9 @@ def main_game(movement_info):
         screen.blit(player_surface, (player_x, player_y))
         pygame.display.update()
         fps_clock.tick(fps)
-        
-        def show_game_over_screen(crash_info):
-    ""Wait for input then return to main loop to restart"""
+
+def show_game_over_screen(crash_info):
+    """Wait for input then return to main loop to restart"""
     score = crash_info['score']
     
     # High Score Logic
@@ -161,7 +162,7 @@ def main_game(movement_info):
     try:
         if os.path.exists('highscore.txt'):
             with open('highscore.txt', 'r') as f:
-                high_score = int(f.read()
+                high_score = int(f.read())
     except: pass
 
     if score > high_score:
@@ -176,9 +177,11 @@ def main_game(movement_info):
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit(); sys.exit()
-            if event.type == KEYDOWN or ev3nt.type == MOUSEBUTTONDOWN:
-                
-screen.blit(images['background'], (0, 0))
+            if event.type == KEYDOWN or event.type == MOUSEBUTTONDOWN:
+                # RESTART TRIGGER: Returning to the while loop in main()
+                return 
+
+        screen.blit(images['background'], (0, 0))
         # Keep showing pipes and base so it looks natural
         for u, l in zip(crash_info['upperPipes'], crash_info['lowerPipes']):
             screen.blit(images['pipe'][0], (u['x'], u['y']))
@@ -235,5 +238,3 @@ def player_shm(data):
 
 if __name__ == '__main__':
     main()
-                
-    
